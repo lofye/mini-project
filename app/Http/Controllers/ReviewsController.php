@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Review;
 use Illuminate\Http\Request;
+use App\Http\Requests\ReviewStoreRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewsController extends Controller
 {
@@ -30,12 +32,17 @@ class ReviewsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param ReviewStoreRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ReviewStoreRequest $request)
     {
-        //
+        $this->authorize('create', Review::class);
+
+        $user = Auth::user();
+        $review = Review::createFromRequest($user, $request->all());
+        $request->session()->flash('status', 'Review Added');
+        return redirect()->route('restaurants.show', ['restaurant' => $review->restaurant_id]);
     }
 
     /**
@@ -63,13 +70,18 @@ class ReviewsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Review  $review
+     * @param  ReviewUpdateRequest  $request
+     * @param  \App\Review  $restaurant
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Review $review)
+    public function update(ReviewUpdateRequest $request, Review $review)
     {
-        //
+        $this->authorize('update', $review);
+
+        $user = Auth::user();
+        $review->updateFromRequest($user, $request->all());
+        $request->session()->flash('status', 'Review Updated');
+        return redirect()->route('restaurants.show', ['restaurant' => $review->restaurant_id]);
     }
 
     /**

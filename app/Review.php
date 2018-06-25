@@ -11,6 +11,25 @@ class Review extends Model
     ];
 
     /**
+     * Create Review by Request
+     *
+     * @param User $user;
+     * @param  array $data
+     * @return Restaurant
+     */
+    public static function createFromRequest(User $user, array $data)
+    {
+        $review = new Review();
+        $review->title = $data['title'];
+        $review->content = $data['content'];
+        $review->value = $data['value'];
+        $review->restaurant_id = $data['restaurant_id'];
+        $review->user_id = $user->id;
+        $review->save();
+        return $review;
+    }
+
+    /**
      * A Review belongs to a User
      * @return QueryBuilder
      */

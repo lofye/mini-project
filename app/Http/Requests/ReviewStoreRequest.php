@@ -25,8 +25,9 @@ class ReviewStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:255',
-            'description' => 'required',
+            'title' => 'required|max:255',
+            'content' => 'required',
+            'value' => 'required|integer|min:1|max:10',
             'restaurant_id' => 'required|integer|min:1|exists:restaurants,id',
             'user_id' => 'required|integer|min:1|exists:users,id',
         ];

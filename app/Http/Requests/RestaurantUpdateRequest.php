@@ -26,7 +26,8 @@ class RestaurantUpdateRequest extends FormRequest
     {
         return [
             'name' => 'required|max:255',
-            'description' => 'required'
+            'description' => 'required',
+            'user_id' => 'required|integer|min:1|exists:users,id',
         ];
     }
 }

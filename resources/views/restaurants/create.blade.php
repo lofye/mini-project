@@ -19,6 +19,13 @@
                             @csrf
                             <input class="form-control" type="text" name="name" placeholder="Name of Restaurant" /><br />
                             <textarea class="form-control" name="description" placeholder="Description of Restaurant"></textarea><br />
+
+                            Review:<br />
+                            <input class="form-control" type="text" name="title" placeholder="Title of Your Review" /><br />
+                            <textarea class="form-control" name="content" placeholder="Your Review of Restaurant"></textarea><br />
+                            <input class="form-control" type="text" name="value" placeholder="Your Rating: 1-10" /><br />
+
+                            <input type="hidden" name="user_id" value="{{$user_id}}" />
                             <input class="form-control btn btn-primary" type="submit" name="submit" value="submit" />
                         </form>
 

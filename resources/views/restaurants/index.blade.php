@@ -5,7 +5,7 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">Restaurants @can('create')- <a href="{{route('restaurants.create')}}">Add</a>@endcan</div>
+                    <div class="card-header">Restaurants @can('create', App\Restaurant::class)- <a href="{{route('restaurants.create')}}">Add</a>@endcan</div>
 
                     <div class="card-body">
                         @if (session('status'))
@@ -20,15 +20,15 @@
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Name</th><th>Actions</th>
+                                        <th>Name</th><th style="padding-left:2em;">Actions</th>
                                     </tr>
                                     </thead>
                                 <tbody>
                                 @foreach($restaurants as $restaurant)
                                     <tr>
                                         <td><a href="{{route('restaurants.show', ['restaurant' => $restaurant->id])}}">{{$restaurant->name}}</a></td>
-                                        <td>
-                                            @can('edit', $restaurant)<a href="{{route('restaurants.edit')}}">Edit</a>@endcan | @can('delete',$restaurant)<a href="{{route('restaurants.destroy', ['restaurant' => $restaurant])}}">Delete</a>@endcan
+                                        <td style="padding-left:2em;">
+                                            @can('update', $restaurant)<a href="{{route('restaurants.edit', ['restaurant' => $restaurant])}}">Edit</a>@endcan | @can('delete',$restaurant)<a href="/restaurants/delete/{{$restaurant->id}}" class="delete" data-confirm="Really Delete Restaurant?">Delete</a>@endcan
                                         </td>
                                     </tr>
                                 @endforeach

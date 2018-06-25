@@ -49,4 +49,13 @@ class Restaurant extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * A Restaurant has many Reviews
+     * @return QueryBuilder
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

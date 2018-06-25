@@ -14,7 +14,15 @@
                             </div>
                         @endif
 
-                        edit form here
+                            <form action="{{route('restaurants.update', ['restaurant' => $restaurant])}}" method="POST">
+                                @method('put')
+                                @csrf
+                                <input class="form-control" type="text" name="name" value="{{$restaurant->name}}" placeholder="Name of Restaurant" /><br />
+                                <textarea class="form-control" name="description" placeholder="Description of Restaurant">{{$restaurant->description}}</textarea><br />
+
+                                <input type="hidden" name="user_id" value="{{$restaurant->user_id}}" />
+                                <input class="form-control btn btn-primary" type="submit" name="submit" value="Save Changes" />
+                            </form>
 
                     </div>
                 </div>

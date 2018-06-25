@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Restaurant;
+use App\Review;
 use Illuminate\Http\Request;
 use App\Http\Requests\RestaurantStoreRequest;
 use App\Http\Requests\RestaurantShowRequest;
@@ -19,7 +20,7 @@ class RestaurantsController extends Controller
     public function autocomplete(Request $request, $term)
     {
         //laravel auto-converts to JSON if you return a collection
-        return Auth::user()->restaurants()->with('reviews')->where('name','LIKE','%'.$term.'%')->limit(5);//make sure these restaurants HAVE reviews
+        return Auth::user()->restaurants()->has('reviews')->with('reviews')->where('name','LIKE','%'.$term.'%')->limit(5)->get();
     }
 
     /**
@@ -29,7 +30,7 @@ class RestaurantsController extends Controller
      */
     public function index()
     {
-        $restaurants = Auth::user()->restaurants()->paginate(5);
+        $restaurants = Auth::user()->restaurants()->has('reviews')->paginate(5);
 
         return view('restaurants.index', compact('restaurants'));
     }
@@ -41,9 +42,10 @@ class RestaurantsController extends Controller
      */
     public function create()
     {
-        $this->authorize('create');
+        $this->authorize('create', Restaurant::class);
 
-        return view('restaurants.create');
+        $user_id = Auth::user()->id;
+        return view('restaurants.create', compact('user_id'));
     }
 
     /**
@@ -54,10 +56,19 @@ class RestaurantsController extends Controller
      */
     public function store(RestaurantStoreRequest $request)
     {
-        $this->authorize('create');
+        $this->authorize('create', Restaurant::class);
 
         $user = Auth::user();
         $restaurant = Restaurant::createFromRequest($user, $request->all());
+        $request->session()->flash('status', 'Restaurant Added');
+
+        $request_data = $request->all();
+        if(!empty($request_data['title']) && !empty($request_data['value']))
+        {
+            $request_data['restaurant_id'] = $restaurant->id;
+            $review = Review::createFromRequest($user, $request_data);
+        }
+
         return redirect()->route('restaurants.show', ['restaurant' => $restaurant->id]);
     }
 
@@ -71,7 +82,9 @@ class RestaurantsController extends Controller
     {
         $this->authorize('view', $restaurant);
 
-        return view('restaurants.show', compact('restaurant'));
+        $reviews = $restaurant->reviews()->get();
+        $user = $restaurant->user()->first();
+        return view('restaurants.show', compact('restaurant','reviews','user'));
     }
 
     /**
@@ -100,22 +113,22 @@ class RestaurantsController extends Controller
 
         $user = Auth::user();
         $restaurant->updateFromRequest($user, $request->all());
+        $request->session()->flash('status', 'Restaurant Updated');
         return redirect()->route('restaurants.show', ['restaurant' => $restaurant->id]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param RestaurantDestroyRequest $request
      * @param  \App\Restaurant  $restaurant
      * @return \Illuminate\Http\Response
      */
-    public function delete(RestaurantDestroyRequest $request, Restaurant $restaurant)
+    public function delete(Request $request, Restaurant $restaurant)
     {
         $this->authorize('delete', $restaurant);
 
         $restaurant->delete();
-        flash('Restaurant Deleted');
+        $request->session()->flash('status', 'Restaurant Deleted');
         return redirect()->route('restaurants.index');
     }
 }

@@ -26,7 +26,10 @@ class RestaurantStoreRequest extends FormRequest
     {
         return [
             'name' => 'required|max:255',
-            'description' => 'required'
+            'description' => 'required',
+            'user_id' => 'required|integer|min:1|exists:users,id',
+            'title' => 'sometimes|max:255',
+            'value' => 'sometimes|integer|min:1|max:10',
         ];
     }
 }
